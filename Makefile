@@ -30,7 +30,6 @@ kube-weave.yaml:
 .PHONY: update-hashes
 update-hashes:
 	set -e ; for tag in $$(linuxkit pkg show-tag pkg/kubelet) \
-	           $$(linuxkit pkg show-tag pkg/cri-containerd) \
 	           $$(linuxkit pkg show-tag pkg/kubernetes-docker-image-cache-common) \
 	           $$(linuxkit pkg show-tag pkg/kubernetes-docker-image-cache-control-plane) ; do \
 	    image=$${tag%:*} ; \

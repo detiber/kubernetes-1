@@ -24,6 +24,11 @@ onboot:
   - name: mounts
     image: linuxkit/mount:0eba853dfa99f01166831c30f37f6bb818b61f2f
     command: ["/usr/bin/mountie", "/var/lib/"]
+  - name: dir-hack
+    image: busybox:latest
+    command: ["mkdir", "-p", "/var/lib/cni/conf", "/var/lib/cni/bin"]
+    binds:
+    - /var:/var:rshared,rbind
 services:
   - name: getty
     image: linuxkit/getty:32247863cace34f3b441b4c5d9d3f5cb5f64d189
@@ -40,7 +45,7 @@ services:
     image: linuxkit/sshd:39d6bdc9a7489ceffa761ad5cb96c87b50d6732d
     cgroupsPath: systemreserved/sshd
   - name: kubelet
-    image: linuxkit/kubelet:ddd2e094e44aae9bab3eb3b8d378d2383d6cda01
+    image: linuxkit/kubelet:1775276ba903b90615d91f0bd034a527163ffbd4
     cgroupsPath: podruntime/kubelet
 files:
   - path: etc/linuxkit.yml

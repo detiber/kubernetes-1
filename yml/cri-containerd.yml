@@ -1,8 +1,23 @@
-services:
-  - name: cri-containerd
-    image: linuxkit/cri-containerd:474d704f6dcb173b10768ab1d1bd61674468c7f9
-    cgroupsPath: podruntime/cri-containerd
 files:
+  - path: /etc/crictl.yaml
+    contents: |
+      runtime-endpoint: unix:///run/containerd/containerd.sock
+      image-endpoint: unix:///run/containerd/containerd.sock
+      timeout: 10
+  - path: /etc/containerd/config.toml
+    contents: |
+      state = "/run/containerd"
+      root = "/var/lib/containerd"
+      snapshotter = "io.containerd.snapshotter.v1.overlayfs"
+      [grpc]
+        address = "/run/containerd/containerd.sock"
+        uid = 0
+        gid = 0
+      [debug]
+        address = "/run/containerd/debug.sock"
+        level = "info"
+      [metrics]
+        address = ""
   - path: /etc/kubelet.sh.conf
     contents: |
-      KUBELET_ARGS="--container-runtime=remote --container-runtime-endpoint=unix:///var/run/cri-containerd.sock"
+      KUBELET_ARGS="--container-runtime=remote --container-runtime-endpoint=unix:///run/containerd/containerd.sock"

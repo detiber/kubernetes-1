@@ -68,7 +68,6 @@ image_build: &image_build
               load kubernetes-docker-image-cache-control-plane
               ;;
           cri-containerd)
-              load cri-containerd
               ;;
           *)
               echo "Unknown $KUBE_RUNTIME"
@@ -196,8 +195,6 @@ jobs:
 
   pkg-kubelet:
     <<: *linuxkit_pkg_build
-  pkg-cri-containerd:
-    <<: *linuxkit_pkg_build
   pkg-kube-e2e-test:
     <<: *linuxkit_pkg_build
 
@@ -275,7 +272,6 @@ jobs:
             cp .circleci/content-trust.key ~/.docker/trust/private/b056f84873aa0be205dfe826afa6e7458120c9569dd19a2a84154498fb1165d5.key
 
             linuxkit pkg push --nobuild pkg/kubelet
-            linuxkit pkg push --nobuild pkg/cri-containerd
             linuxkit pkg push --nobuild pkg/kube-e2e-test
             linuxkit pkg push --nobuild pkg/kubernetes-docker-image-cache-common
             linuxkit pkg push --nobuild pkg/kubernetes-docker-image-cache-control-plane
@@ -290,9 +286,6 @@ workflows:
             - dependencies
 
       - pkg-kubelet:
-          requires:
-            - dependencies
-      - pkg-cri-containerd:
           requires:
             - dependencies
       - pkg-kube-e2e-test:
@@ -321,12 +314,10 @@ workflows:
           requires:
             - dependencies
             - pkg-kubelet
-            - pkg-cri-containerd
       - image-cri-containerd-bridge:
           requires:
             - dependencies
             - pkg-kubelet
-            - pkg-cri-containerd
 
       - push-pkgs-to-hub:
           # We want everything to have passed, which is a bit
@@ -335,7 +326,6 @@ workflows:
           requires:
             - lint
             - pkg-kubelet
-            - pkg-cri-containerd
             - pkg-kube-e2e-test
             - pkg-kubernetes-docker-image-cache-common
             - pkg-kubernetes-docker-image-cache-control-plane
