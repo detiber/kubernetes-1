@@ -2,6 +2,7 @@ KUBE_RUNTIME ?= docker
 KUBE_NETWORK ?= weave
 
 KUBE_NETWORK_WEAVE ?= v2.2.1
+KUBE_NETWORK_CALICO ?= v3.1
 
 ifeq ($(shell uname -s),Darwin)
 KUBE_FORMATS ?= iso-efi
@@ -27,6 +28,11 @@ yml/weave.yml: kube-weave.yaml
 kube-weave.yaml:
 	curl -L -o $@ https://cloud.weave.works/k8s/v1.8/net?v=$(KUBE_NETWORK_WEAVE)
 
+yml/calico.yml: kube-calico.yaml
+
+kube-calico.yaml:
+	curl -L -o $@ https://docs.projectcalico.org/${KUBE_NETWORK_CALICO}/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml
+
 .PHONY: update-hashes
 update-hashes:
 	set -e ; for tag in $$(linuxkit pkg show-tag pkg/kubelet) \
@@ -40,7 +46,7 @@ update-hashes:
 clean:
 	rm -f -r \
 	  kube-*-kernel kube-*-cmdline kube-*-state kube-*-initrd.img *.iso \
-	  kube-weave.yaml
+	  kube-weave.yaml kube-calico.yaml
 
 .PHONY: refresh-image-caches
 refresh-image-caches:

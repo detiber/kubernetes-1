@@ -28,9 +28,9 @@ To build the default OS images:
 make all
 ```
 
-By default this will build images using Docker Engine for execution. To instead use cri-containerd use:
+By default this will build images using Docker Engine for execution and weave for networking. To instead use cri-containerd and calico use:
 ```
-make all KUBE_RUNTIME=cri-containerd
+make all KUBE_RUNTIME=cri-containerd KUBE_NETWORK=calico
 ```
 
 ## Booting and initialising OS images
@@ -42,6 +42,11 @@ Boot Kubernetes master OS image using `hyperkit` on macOS: or `qemu` on Linux:
 or, to automatically initialise the cluster upon boot with no additional options
 ```
 KUBE_MASTER_AUTOINIT="" ./boot.sh
+```
+
+If using calico for networking:
+```
+KUBE_MASTER_AUTOINIT="--pod-network-cidr=192.168.0.0/16" ./boot.sh
 ```
 
 Get IP address of the master:

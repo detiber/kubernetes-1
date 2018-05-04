@@ -217,6 +217,13 @@ jobs:
     environment:
       - KUBE_RUNTIME: docker
       - KUBE_NETWORK: bridge
+  image-docker-calico:
+    <<: *image_build
+    # Needs to be configured/enabled by CircleCI person
+    #resource_class: large
+    environment:
+      - KUBE_RUNTIME: docker
+      - KUBE_NETWORK: calico
 
   image-cri-containerd-weave:
     <<: *image_build
@@ -228,6 +235,11 @@ jobs:
     environment:
       - KUBE_RUNTIME: cri-containerd
       - KUBE_NETWORK: bridge
+  image-cri-containerd-calico:
+    <<: *image_build
+    environment:
+      - KUBE_RUNTIME: cri-containerd
+      - KUBE_NETWORK: calico
 
   push-pkgs-to-hub:
     docker:
@@ -310,11 +322,21 @@ workflows:
             - pkg-kubelet
             - pkg-kubernetes-docker-image-cache-common
             - pkg-kubernetes-docker-image-cache-control-plane
+      - image-docker-calilco:
+          requires:
+            - dependencies
+            - pkg-kubelet
+            - pkg-kubernetes-docker-image-cache-common
+            - pkg-kubernetes-docker-image-cache-control-plane
       - image-cri-containerd-weave:
           requires:
             - dependencies
             - pkg-kubelet
       - image-cri-containerd-bridge:
+          requires:
+            - dependencies
+            - pkg-kubelet
+      - image-cri-containerd-calico:
           requires:
             - dependencies
             - pkg-kubelet
@@ -331,5 +353,7 @@ workflows:
             - pkg-kubernetes-docker-image-cache-control-plane
             - image-docker-weave
             - image-docker-bridge
+            - image-docker-calico
             - image-cri-containerd-weave
             - image-cri-containerd-bridge
+            - image-cri-containerd-calico
